@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import logo from "../img/logo.png";
+import FontSizeSelector from "./FontSizeSelector";
 
 export default function Navbar() {
   return (
@@ -14,6 +15,8 @@ export default function Navbar() {
           className="rounded-full ring-2 ring-white "
         />
       </Link>
+
+      <FontSizeSelector />
     </div>
   );
 }
