@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import logo from "../img/logo.png";
 import FontSizeSelector from "./FontSizeSelector";
+import { FontProvider } from "@/contexts/FontContext";
 
 export default function Navbar() {
   return (
@@ -12,7 +13,7 @@ export default function Navbar() {
           src={logo}
           alt="logo"
           width={40}
-          className="rounded-full ring-2 ring-white "
+          className="rounded-full ring-2 ring-white h-auto w-auto"
         />
       </Link>
 

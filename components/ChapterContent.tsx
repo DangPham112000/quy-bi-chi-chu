@@ -1,22 +1,25 @@
 "use client";
 
-import { getFontSize } from "@/helpers/fontSizeHandle";
-import React from "react";
+import { FontContext } from "@/contexts/FontContext";
+import React, { useContext } from "react";
+import dynamic from 'next/dynamic'
 
-export default function ChapterContent({
+function ChapterContent({
   chapterContent,
 }: {
   chapterContent: Array<String>;
 }) {
-  const fontSize = getFontSize();
+  const { font } = useContext(FontContext);
 
   return (
-    <article
-      className={`flex flex-col ${fontSize.value} ${fontSize.paragraphGap}`}
-    >
+    <article className={`flex flex-col ${font.value} ${font.paragraphGap}`}>
       {chapterContent.map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}
     </article>
   );
 }
+
+export default dynamic(() => Promise.resolve(ChapterContent), {
+  ssr: false
+})

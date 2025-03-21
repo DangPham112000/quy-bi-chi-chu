@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { TextIcon } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,18 +10,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { FONT_SIZES, FontSizeOption, getFontSize } from "@/helpers/fontSizeHandle";
+import { FONTS } from "@/lib/k";
+import { FontType } from "@/types/font";
+import { FontContext } from "@/contexts/FontContext";
 
 export default function FontSizeSelector() {
-  const [currentFontSize, setCurrentFontSize] = useState<FontSizeOption>(
-    getFontSize()
-  );
 
-  const handleFontSizeChange = (fontSizeOption: FontSizeOption) => {
-    setCurrentFontSize(fontSizeOption);
+  const { font, setFont } = useContext(FontContext);
+
+  const handleFontChange = (fontOption: FontType) => {
+    setFont(fontOption);
 
     // Save to localStorage
-    window.localStorage.setItem("my-font-size", fontSizeOption.value);
+    window.localStorage.setItem("my-font-size", fontOption.value);
   };
 
   return (
@@ -30,19 +31,21 @@ export default function FontSizeSelector() {
         <TextIcon className="w-full" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-4 rounded-md">
-        <DropdownMenuLabel className="text-lg px-4">Font Size</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-lg px-4">
+          Font Size
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {FONT_SIZES.map((size, index) => (
+        {FONTS.map((f, index) => (
           <DropdownMenuItem
             key={index}
-            onSelect={() => handleFontSizeChange(size)}
+            onSelect={() => handleFontChange(f)}
             className={`text-sm p-2 rounded-md ${
-              currentFontSize.value === size.value
+              font.value === f.value
                 ? "bg-accent text-accent-foreground"
                 : "cursor-pointer"
             }`}
           >
-            {size.label}
+            {f.label}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
