@@ -1,3 +1,4 @@
+import { ChapterTable } from "@/components/ChapterTable";
 import { Button } from "@/components/ui/button";
 import {
   Pagination,
@@ -7,30 +8,24 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { getAllChapters } from "@/lib/chapterLoader";
 import Link from "next/link";
 
 const CHAPTERS_PER_PAGE = 100;
 
-type SearchParams = Promise<{ page?: string }>;
+type SearchParams = Promise<{ page?: string; part?: "part2" }>;
 
 export default async function HomePage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const { page } = await searchParams;
+  const { part, page } = await searchParams;
+  const currentPart = part;
+  const isPart2 = currentPart === "part2";
   const currentPage = parseInt(page || "1");
 
-  const allChapters = getAllChapters();
+  const allChapters = getAllChapters(currentPart);
 
   const totalChapters = allChapters.length;
   const totalPages = Math.ceil(totalChapters / CHAPTERS_PER_PAGE);
@@ -50,49 +45,45 @@ export default async function HomePage({
 
   return (
     <div className="container flex flex-col p-4 mx-auto">
-      <h1 className="text-3xl font-bold mb-6 self-center">Quỷ bí chi chủ</h1>
+      <div className="self-center flex gap-5 mb-6 text-3xl font-bold">
+        <Link
+          href={`/`}
+          className={`${
+            isPart2 ? "text-black" : "bg-black text-white"
+          } rounded-md border-2 px-4 py-2`}
+        >
+          Quỷ bí chi chủ
+        </Link>
+        <Link
+          href={`/?part=part2`}
+          className={`${
+            isPart2 ? "bg-black text-white" : "text-black"
+          } rounded-md border-2 px-4 py-2`}
+        >
+          Túc mệnh chi hoàn
+        </Link>
+      </div>
 
-      <Link href="/chapter/1" className="mb-10">
+      <Link href={`${part ? "/part2" : ""}/chapter/1`} className="mb-10">
         <Button>Start reading</Button>
       </Link>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Chapter</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead className="flex items-center justify-end">
-              <span className="w-[60px] flex justify-center">Action</span>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedChapter.map((chapter) => (
-            <TableRow key={chapter.id}>
-              <TableCell>{chapter.id}</TableCell>
-              <TableCell>{chapter.title}</TableCell>
-              <TableCell className="flex items-center justify-end">
-                <Link href={`/chapter/${chapter.id}`}>
-                  <Button>Read</Button>
-                </Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <ChapterTable paginatedChapter={paginatedChapter} part={currentPart} />
 
       <div className="my-10">
         <Pagination>
           <PaginationContent className="inline-flex justify-center w-full overflow-x-auto ">
             {currentPage > 1 && (
               <PaginationItem>
-                <PaginationPrevious href={`/?page=${currentPage - 1}`} />
+                <PaginationPrevious
+                  href={`/?page=${currentPage - 1}&part=${currentPart}`}
+                />
               </PaginationItem>
             )}
             {generatePageNumber().map((pageNumber) => (
               <PaginationItem key={pageNumber}>
                 <PaginationLink
-                  href={`/?page=${pageNumber}`}
+                  href={`/?page=${pageNumber}&part=${currentPart}`}
                   isActive={pageNumber === currentPage}
                 >
                   {pageNumber}
@@ -101,7 +92,9 @@ export default async function HomePage({
             ))}
             {currentPage < totalPages && (
               <PaginationItem>
-                <PaginationNext href={`/?page=${currentPage + 1}`} />
+                <PaginationNext
+                  href={`/?page=${currentPage + 1}&part=${currentPart}`}
+                />
               </PaginationItem>
             )}
           </PaginationContent>
